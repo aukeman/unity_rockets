@@ -46,9 +46,7 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\P.cs" />
-     <Compile Include="Assets\Player.cs" />
-     <Compile Include="Assets\RenderOutline.cs" />
+     <Compile Include="Assets\Scripts\Player.cs" />
      <None Include="Assets\Shaders\JacobToonShader.orig.shader" />
      <None Include="Assets\Shaders\wireframe.shader" />
      <None Include="Assets\Shaders\JacobToonShader.shader" />

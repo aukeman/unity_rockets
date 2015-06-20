@@ -5,3 +5,4 @@ Temp/
 obj/
 *.*proj
 *.sln
+*.blend[0-9]
