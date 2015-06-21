@@ -155,7 +155,7 @@ Shader "Jacob/Toon" {
      	Pass {
    			Name "INNER_OUTLINE"
 			Tags { "LightMode" = "Always" }
-			Cull Back
+			Cull Front
 			ZWrite On
 			ZTest Less
 			ColorMask RGB // alpha not used
