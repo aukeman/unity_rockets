@@ -151,7 +151,7 @@ Shader "Jacob/Toon" {
  
          ENDCG
       }
-      
+      /*
      	Pass {
    			Name "INNER_OUTLINE"
 			Tags { "LightMode" = "Always" }
@@ -181,7 +181,7 @@ Shader "Jacob/Toon" {
  
 			ENDCG
    	}
-   
+   */
 	} 
 
    // The definition of a fallback shader should be commented out 
