@@ -14,6 +14,8 @@ public class Player : MonoBehaviour {
 
 	public ParticleSystem engineExhaust;
 
+	public TractorBeam tractorBeam;
+
 	private float maxExhaustLifetime = 0.0f;
 
 	private float bankSpeed = 0.0f;
@@ -79,4 +81,19 @@ public class Player : MonoBehaviour {
 			engineExhaust.enableEmission = false;
 		}
 	}
+
+	void Update()
+	{
+		bool fireDown = Input.GetButtonDown ("Fire1");
+		bool fireUp = Input.GetButtonUp ("Fire1");
+		
+		if (fireDown) {
+			tractorBeam.On();
+		} else if (fireUp) {
+			tractorBeam.Off();
+		}
+	}
+
+
+
 }

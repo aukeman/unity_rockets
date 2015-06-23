@@ -49,6 +49,7 @@
      <Compile Include="Assets\AsteroidRotator.cs" />
      <Compile Include="Assets\FollowPlayer.cs" />
      <Compile Include="Assets\Scripts\Player.cs" />
+     <Compile Include="Assets\TractorBeam.cs" />
      <None Include="Assets\Shaders\JacobToonShader.orig.shader" />
      <None Include="Assets\Shaders\wireframe.shader" />
      <None Include="Assets\Shaders\JacobToonShader.shader" />
