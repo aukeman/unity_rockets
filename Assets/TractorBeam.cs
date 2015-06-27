@@ -9,6 +9,7 @@ public class TractorBeam : MonoBehaviour {
 	private float beamParticleLifetime;
 
 	private bool active;
+	private bool blocked;
 
 	private ParticleSystem.Particle[] emptyParticles;
 
@@ -18,8 +19,24 @@ public class TractorBeam : MonoBehaviour {
 		beam.enableEmission = false;
 		pulses.enableEmission = false;
 		active = false;
+		blocked = false;
 
 		emptyParticles = new ParticleSystem.Particle[0];
+
+	}
+
+	void Update()
+	{
+		RaycastHit rayCastHit;
+		blocked = Physics.SphereCast (transform.position, // + transform.forward*1f, 
+		                              0.5f,
+		                              transform.forward,
+		                              out rayCastHit,
+		                              40.0f);
+
+		if (blocked) {
+			Debug.Log("hit: " + rayCastHit.collider);
+		}
 
 	}
 
@@ -27,49 +44,56 @@ public class TractorBeam : MonoBehaviour {
 	{
 		beam.startLifetime = beamParticleLifetime;
 		beam.enableEmission = true;
-		pulses.enableEmission = true;
+		pulses.enableEmission = !blocked;
 		active = true;
 	}
 
 	public void Off()
 	{
 		active = false;
-		pulses.enableEmission = false;
-
-		pulses.SetParticles (emptyParticles, 0);
+		TurnOffPulses ();
 
 		StartCoroutine ("RetractBeam");
-		//StartCoroutine ("FadePulses");
 	}
 
-/*	IEnumerator FadePulses()
+	void OnTriggerEnter(Collider other)
 	{
-		int increment = 255 / 5;
-
-		pulses.GetParticles (pulseParticles);
-		
-		for (int i = 0; !active && i < 5; ++i) {
-			beam.startLifetime -= increment;
-			
-			for (int pIdx = 0; pIdx < pulseParticles.Length; ++pIdx){
-				Color c = pulseParticles[pIdx].color;
-				c.a -= increment;
-				c.a = 0;
-
-				pulseParticles[pIdx].color = c;
-			}
-
-			yield return null;
+		Debug.Log ("OnTriggerEnter", other);
+		if (!blocked && active) 
+		{
+			Debug.Log ("OnTriggerEnter, turn on pulses");
+			TurnOnPulses();
 		}
+	}
 
-		if (!active) {
-			for (int pIdx = 0; pIdx < pulseParticles.Length; ++pIdx){
-				Color c = pulseParticles[pIdx].color;
-				c.a = 0;
-				pulseParticles[pIdx].color = c;
-			}
+	void OnTriggerExit(Collider other)
+	{
+		Debug.Log ("OnTriggerExit", other);
+		TurnOffPulses ();
+	}
+
+	void OnTriggerStay(Collider other)
+	{
+		if (!blocked && active && !ArePulsesOn ()) {
+			TurnOnPulses();
 		}
-	}*/
+	}
+
+	void TurnOnPulses()
+	{
+		pulses.enableEmission = true;
+	}
+
+	void TurnOffPulses()
+	{
+		pulses.enableEmission = false;
+		pulses.SetParticles (emptyParticles, 0);
+	}
+
+	bool ArePulsesOn()
+	{
+		return pulses.enableEmission;
+	}
 
 	IEnumerator RetractBeam()
 	{
