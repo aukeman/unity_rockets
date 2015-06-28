@@ -31,9 +31,6 @@ public class Player : MonoBehaviour {
 
 	private Rigidbody rigidBody;
 
-	private GameObject capturedObject = null;
-	private Vector3 capturedObjectOffset;
-
 	// Use  this for initialization
 	void Awake(){
 		engineExhaust.enableEmission = false;
@@ -85,14 +82,6 @@ public class Player : MonoBehaviour {
 		}else {
 			engineExhaust.enableEmission = false;
 		}
-
-		if (capturedObject != null) {
-
-			capturedObjectOffset = Quaternion.AngleAxis (rotationAngle, Vector3.up) * capturedObjectOffset;
-
-			capturedObject.transform.position =
-				transform.position + capturedObjectOffset;
-		}
 	}
 
 	void Update()
@@ -109,17 +98,11 @@ public class Player : MonoBehaviour {
 
 	void TractorBeamCapture( GameObject captured )
 	{
-		this.capturedObject = captured;
-		this.rigidBody.mass += captured.GetComponent<Rigidbody> ().mass;
-		this.capturedObjectOffset = captured.transform.position - transform.position;
+//		this.rigidBody.mass += captured.GetComponent<Rigidbody> ().mass;
 	}
 
 	void TractorBeamRelease( GameObject released )
 	{
-		this.rigidBody.mass -= released.GetComponent<Rigidbody> ().mass;
-		this.capturedObject = null;
+//		this.rigidBody.mass -= released.GetComponent<Rigidbody> ().mass;
 	}
-
-
-
 }

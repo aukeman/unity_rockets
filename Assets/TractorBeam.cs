@@ -3,13 +3,18 @@ using System.Collections;
 
 public class TractorBeam : MonoBehaviour {
 
+	public delegate void TractorBeamEvent(GameObject target);
+	
+	public event TractorBeamEvent Captured;
+	public event TractorBeamEvent Released;
+	
 	public ParticleSystem beam;
 	public ParticleSystem pulses;
 
-	public delegate void TractorBeamEvent(GameObject target);
-
-	public event TractorBeamEvent Captured;
-	public event TractorBeamEvent Released;
+	private Collider captureVolume;
+	
+	private GameObject capturedObject;
+	private Vector3 capturePointLocal;
 
 	private float beamParticleLifetime;
 
@@ -28,25 +33,34 @@ public class TractorBeam : MonoBehaviour {
 
 		emptyParticles = new ParticleSystem.Particle[0];
 
+		captureVolume = GetComponent<Collider> ();
+		captureVolume.enabled = false;
 	}
 
-	void Update()
+	void FixedUpdate()
 	{
+
+		if (capturedObject != null) {
+			capturedObject.transform.position = transform.TransformPoint( capturePointLocal );
+		}
+
 		RaycastHit rayCastHit;
 		blocked = Physics.SphereCast (transform.position, // + transform.forward*1f, 
 		                              0.5f,
 		                              transform.forward,
 		                              out rayCastHit,
 		                              40.0f);
-
+		
 		if (blocked) {
-			Debug.Log("hit: " + rayCastHit.collider);
+			captureVolume.enabled = false;
+		} else if (active) {
+			captureVolume.enabled = true;
 		}
-
 	}
 
 	public void On()
 	{
+		captureVolume.enabled = !blocked;
 		beam.startLifetime = beamParticleLifetime;
 		beam.enableEmission = true;
 		active = true;
@@ -54,8 +68,10 @@ public class TractorBeam : MonoBehaviour {
 
 	public void Off()
 	{
+		captureVolume.enabled = false;
 		active = false;
-		TurnOffPulses ();
+
+		Release ();
 
 		StartCoroutine ("RetractBeam");
 	}
@@ -65,45 +81,24 @@ public class TractorBeam : MonoBehaviour {
 		Debug.Log ("OnTriggerEnter", other);
 		if (!blocked && active) 
 		{
-			Debug.Log ("OnTriggerEnter, turn on pulses");
-			TurnOnPulses();
-
-			if  (Captured != null )
-			{
-				Captured(other.gameObject);
-			}
+			Capture(other.gameObject);
 		}
 	}
 
 	void OnTriggerExit(Collider other)
 	{
 		Debug.Log ("OnTriggerExit", other);
-		if (!blocked && active && ArePulsesOn ()) {
-			TurnOffPulses ();
-
-			if ( Released != null )
-			{
-				Released (other.gameObject);
-			}
+		if (!blocked && active && capturedObject != null) {
+			Release();
 		}
 	}
 
 	void OnTriggerStay(Collider other)
 	{
-		if (!blocked && active && !ArePulsesOn ()) {
-			TurnOnPulses ();
-
-			if ( Captured != null )
-			{
-				Captured(other.gameObject);
-			}
-		} else if (blocked && active && ArePulsesOn ()) {
-			TurnOffPulses();
-
-			if ( Released != null)
-			{
-				Released(other.gameObject);
-			}
+		if (!blocked && active && capturedObject == null) {
+			Capture(other.gameObject);
+		} else if (blocked && active && capturedObject != null) {
+			Release();
 		}
 	}
 
@@ -121,6 +116,31 @@ public class TractorBeam : MonoBehaviour {
 	bool ArePulsesOn()
 	{
 		return pulses.enableEmission;
+	}
+
+	void Capture(GameObject captured)
+	{			
+		TurnOnPulses();
+		capturedObject = captured;
+		capturePointLocal = transform.InverseTransformPoint( captured.transform.position ); 
+
+		if  (Captured != null )
+		{
+			Captured(captured);
+		}
+	}
+
+	void Release ()
+	{
+		if (capturedObject != null) {
+			GameObject releasedObject = capturedObject;
+
+			TurnOffPulses ();
+			capturedObject = null;
+			if (Released != null) {
+				Released (releasedObject);
+			}
+		}
 	}
 
 	IEnumerator RetractBeam()
