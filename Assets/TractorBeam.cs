@@ -44,7 +44,6 @@ public class TractorBeam : MonoBehaviour {
 	{
 		beam.startLifetime = beamParticleLifetime;
 		beam.enableEmission = true;
-		pulses.enableEmission = !blocked;
 		active = true;
 	}
 
@@ -75,7 +74,9 @@ public class TractorBeam : MonoBehaviour {
 	void OnTriggerStay(Collider other)
 	{
 		if (!blocked && active && !ArePulsesOn ()) {
-			TurnOnPulses();
+			TurnOnPulses ();
+		} else if (blocked && active && ArePulsesOn ()) {
+			TurnOffPulses();
 		}
 	}
 
