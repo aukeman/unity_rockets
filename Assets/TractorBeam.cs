@@ -6,6 +6,11 @@ public class TractorBeam : MonoBehaviour {
 	public ParticleSystem beam;
 	public ParticleSystem pulses;
 
+	public delegate void TractorBeamEvent(GameObject target);
+
+	public event TractorBeamEvent Captured;
+	public event TractorBeamEvent Released;
+
 	private float beamParticleLifetime;
 
 	private bool active;
@@ -62,21 +67,43 @@ public class TractorBeam : MonoBehaviour {
 		{
 			Debug.Log ("OnTriggerEnter, turn on pulses");
 			TurnOnPulses();
+
+			if  (Captured != null )
+			{
+				Captured(other.gameObject);
+			}
 		}
 	}
 
 	void OnTriggerExit(Collider other)
 	{
 		Debug.Log ("OnTriggerExit", other);
-		TurnOffPulses ();
+		if (!blocked && active && ArePulsesOn ()) {
+			TurnOffPulses ();
+
+			if ( Released != null )
+			{
+				Released (other.gameObject);
+			}
+		}
 	}
 
 	void OnTriggerStay(Collider other)
 	{
 		if (!blocked && active && !ArePulsesOn ()) {
 			TurnOnPulses ();
+
+			if ( Captured != null )
+			{
+				Captured(other.gameObject);
+			}
 		} else if (blocked && active && ArePulsesOn ()) {
 			TurnOffPulses();
+
+			if ( Released != null)
+			{
+				Released(other.gameObject);
+			}
 		}
 	}
 
