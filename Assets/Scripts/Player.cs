@@ -39,9 +39,6 @@ public class Player : MonoBehaviour {
 		this.maximumSpeedSquared = Mathf.Pow(this.maximumSpeed, 2.0f);
 
 		this.rigidBody = GetComponent<Rigidbody> ();
-
-		this.tractorBeam.Captured += TractorBeamCapture;
-		this.tractorBeam.Released += TractorBeamRelease;
 	}
 
 	void FixedUpdate(){
@@ -94,15 +91,5 @@ public class Player : MonoBehaviour {
 		} else if (fireUp) {
 			tractorBeam.Off();
 		}
-	}
-
-	void TractorBeamCapture( GameObject captured )
-	{
-//		this.rigidBody.mass += captured.GetComponent<Rigidbody> ().mass;
-	}
-
-	void TractorBeamRelease( GameObject released )
-	{
-//		this.rigidBody.mass -= released.GetComponent<Rigidbody> ().mass;
 	}
 }
