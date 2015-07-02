@@ -7,6 +7,8 @@ public class TractorBeam : MonoBehaviour {
 	
 	public ParticleSystem beam;
 
+	public float beamForce = 0.5f;
+
 	private float beamParticleLifetime;
 
 	private bool active;
@@ -20,7 +22,6 @@ public class TractorBeam : MonoBehaviour {
 		active = false;
 
 		beamRange = beam.startLifetime * beam.startSpeed;
-		Debug.Log ("beam Range: " + beamRange);
 	}
 
 	public void On()
@@ -45,7 +46,10 @@ public class TractorBeam : MonoBehaviour {
 			                    transform.forward,
 			                   out rayCastHit,
 		                        beamRange)) {
-			rayCastHit.collider.attachedRigidbody.AddForce(-0.2f*transform.forward);
+
+			Vector3 force = (transform.position - rayCastHit.point).normalized * beamForce;
+
+			rayCastHit.collider.attachedRigidbody.AddForceAtPosition( force, rayCastHit.point );
 		}
 
 
